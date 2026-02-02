@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine? 💕</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            font-family: 'Comic Sans MS', cursive;
+            overflow: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '💖';
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            font-size: 2em;
+            animation: float 6s ease-in-out infinite;
+        }
+        body::after {
+            content: '💖';
+            position: absolute;
+            bottom: 20%;
+            right: 10%;
+            font-size: 2em;
+            animation: float 6s ease-in-out infinite reverse;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 400px;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #ff69b4;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .gif {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.1s ease; /* Faster transition */
+            font-family: inherit;
+        }
+        .yes {
+            background: #ff69b4;
+            color: white;
+        }
+        .yes:hover {
+            background: #ff1493;
+            transform: scale(1.05);
+        }
+        .no {
+            background: #ffd700;
+            color: #333;
+            position: relative;
+            will-change: transform; /* Optimize for fast movement */
+        }
+        .happy-end {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        .happy-gif {
+            width: 250px;
+            height: 250px;
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                margin: 20px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="main">
+        <img class="gif" src="https://media.tenor.com/wIx44jsp4DMAAAAm/kiss.webp" alt="Cute Bubu Dudu" id="currentGif">
+        <h1>Will you be my Valentine? 💕</h1>
+        <div class="buttons">
+            <button class="yes" onclick="yesClicked()">Yes! 😍</button>
+            <button class="no" id="noBtn">No 😢</button>
+        </div>
+    </div>
+    <div class="container happy-end" id="happyEnd">
+        <h1>Yay! 💖💖💖</h1>
+        <img class="happy-gif" src="https://media.tenor.com/ySITUM2KYHYAAAAm/dudu-bubu.webp" alt="Happy Bubu Dudu">
+        <p>I love you too! Let's celebrate! 🎉</p>
+    </div>
+
+    <audio id="loveSong" loop>
+        <source src="Heeriye.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const main = document.getElementById('main');
+        const happyEnd = document.getElementById('happyEnd');
+        const currentGif = document.getElementById('currentGif');
+        const loveSong = document.getElementById('loveSong');
+
+        const sadGif = 'https://media.tenor.com/sWXhCC4A2woAAAAj/bubu-bubu-dudu.gif';
+
+        let animationId = null;
+
+        function moveNoAway(e) {
+            if (animationId) cancelAnimationFrame(animationId);
+            
+            // Very fast movement - larger distance and opposite direction
+            const rect = noBtn.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            let dx = e.clientX - centerX;
+            let dy = e.clientY - centerY;
+            
+            // Normalize and multiply for speed
+            const distance = Math.sqrt(dx*dx + dy*dy);
+            if (distance < 100) { // Only move if close
+                dx = (dx / distance) * 120; // Fast jump 120px away
+                dy = (dy / distance) * 120;
+                
+                noBtn.style.transform = `translate(${dx}px, ${dy}px)`;
+                noBtn.style.background = '#ff4444';
+                
+                // Quick GIF change
+                currentGif.src = sadGif;
+                currentGif.alt = 'Sad Bubu Dudu';
+            }
+            
+            animationId = requestAnimationFrame(() => {}); // Reset flag
+        }
+
+        noBtn.addEventListener('mouseenter', moveNoAway);
+        noBtn.addEventListener('mousemove', moveNoAway); // Continuous fast dodging
+
+        // Reset on mouseleave (optional - keeps it playful)
+        noBtn.addEventListener('mouseleave', function() {
+            noBtn.style.transform = 'translate(0, 0)';
+            noBtn.style.background = '#ffd700';
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        });
+
+        function yesClicked() {
+            main.style.display = 'none';
+            happyEnd.style.display = 'flex';
+            document.querySelector('.happy-gif').src = 'https://media.tenor.com/ySITUM2KYHYAAAAm/dudu-bubu.webp';
+            loveSong.play().catch(e => console.log('Autoplay prevented'));
+        }
+
+        function createHearts() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = '💖';
+                    heart.style.cssText = `
+                        position: fixed;
+                        left: ${Math.random() * 100}vw;
+                        top: 100vh;
+                        font-size: 2em;
+                        pointer-events: none;
+                        animation: float 3s ease-out forwards;
+                        z-index: 1000;
+                    `;
+                    document.body.appendChild(heart);
+                    setTimeout(() => heart.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `@keyframes float { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; } }`;
+        document.head.appendChild(style);
+
+        happyEnd.addEventListener('transitionend', createHearts);
+    </script>
+</body>
+</html>
+
+
